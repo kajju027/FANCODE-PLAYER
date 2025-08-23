@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>CNP FANCODE LIVE Plyr Player</title>
-  <!-- Plyr CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css" />
   <style>
     body { background: #222; color: #fff; text-align: center; margin:0; padding:0; font-family: Arial,sans-serif;}
@@ -33,7 +32,7 @@
       width: 100vw;
       max-width: 700px;
       min-width: 220px;
-      height: 56vw;         /* 16:9 ratio for mobile */
+      height: 56vw;
       max-height: 70vh;
       background: #000;
       border: none;
@@ -57,7 +56,6 @@
   <div class="player-container">
     <video id="player" controls playsinline poster="" preload="none"></video>
   </div>
-  <!-- Plyr & HLS.js JS -->
   <script src="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.polyfilled.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.7/dist/hls.min.js"></script>
   <script>
@@ -93,22 +91,15 @@
         window.hls.loadSource(m3u8Url);
         window.hls.attachMedia(video);
         window.hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
-          // Collect all qualities
           const availableQualities = window.hls.levels.map(lvl => lvl.height).sort((a, b) => a - b);
-          // Remove duplicate qualities
           const uniqueQualities = [...new Set(availableQualities)];
           player.options.quality.options = uniqueQualities;
           player.quality = uniqueQualities.includes(240) ? 240 : uniqueQualities[0];
-
-          // Update Plyr quality menu
           player.config.quality.options = uniqueQualities;
-
-          // Set default quality
           const level240 = window.hls.levels.findIndex(lvl => lvl.height === 240);
           window.hls.currentLevel = level240 !== -1 ? level240 : 0;
         });
 
-        // Quality change sync
         player.on('qualitychange', event => {
           let newQuality = event.detail.plyr.quality;
           let level = window.hls.levels.findIndex(lvl => lvl.height === newQuality);
@@ -121,11 +112,9 @@
         alert("দুঃখিত, আপনার ব্রাউজার ভিডিও ফরম্যাট সাপোর্ট করেনা।");
       }
     } else {
-      // No video source, so remove video src if any
       video.removeAttribute('src');
       if (window.hls) window.hls.detachMedia();
     }
   </script>
 </body>
-  </html>
-  
+</html>
