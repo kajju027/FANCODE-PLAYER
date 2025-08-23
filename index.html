@@ -1,120 +1,75 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>CNP FANCODE LIVE Plyr Player</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.css" />
-  <style>
-    body { background: #222; color: #fff; text-align: center; margin:0; padding:0; font-family: Arial,sans-serif;}
-    .live-title {
-      font-size: 1.1em;
-      color: #ffd700;
-      background: rgba(0,0,0,0.75);
-      padding: 6px 0;
-      margin: 0;
-      letter-spacing: 2px;
-      font-weight: bold;
-      width: 100vw;
-      max-width: 100vw;
-      position:relative;
-      z-index:2;
-      box-shadow:0 2px 2px rgba(0,0,0,0.07);
-    }
-    .player-container {
-      max-width: 99vw;
-      margin: 0 auto;
-      padding: 0;
-      position:relative;
-      z-index:1;
-    }
-    video {
-      width: 100vw;
-      max-width: 700px;
-      min-width: 220px;
-      height: 56vw;
-      max-height: 70vh;
-      background: #000;
-      border: none;
-      outline: none;
-      display: block;
-      margin: 0 auto;
-    }
-    @media (min-width: 700px) {
-      video {
-        height: 392px;
-      }
-    }
-    @media (max-width:500px) {
-      .live-title { font-size: 0.95em; padding: 5px 0;}
-      video { min-width: 100vw; }
-    }
-  </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sayan TV — Live m3u8 Player</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- hls.js CDN -->
+  <script defer src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js"></script>
+  <script defer src="app.js"></script>
 </head>
 <body>
-  <div class="live-title">CNP FANCODE LIVE</div>
-  <div class="player-container">
-    <video id="player" controls playsinline poster="" preload="none"></video>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/plyr@3.7.8/dist/plyr.polyfilled.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.7/dist/hls.min.js"></script>
-  <script>
-    function getM3U8Link() {
-      const params = new URLSearchParams(window.location.search);
-      return params.get('i');
-    }
+  <header class="container">
+    <h1 class="brand">sayan tv</h1>
+  </header>
 
-    const video = document.getElementById('player');
-    const m3u8Url = getM3U8Link();
+  <main class="container">
+    <section class="player-card">
+      <video id="video" playsinline></video>
 
-    // Plyr init
-    const plyrOptions = {
-      controls: ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'settings', 'fullscreen'],
-      settings: ['quality'],
-      quality: {
-        default: 240,
-        options: [],
-        forced: true,
-        onChange: (quality) => {
-          if (window.hls && window.hls.levels) {
-            const level = window.hls.levels.findIndex(lvl => lvl.height === quality);
-            window.hls.currentLevel = level;
-          }
-        }
-      }
-    };
-    const player = new Plyr(video, plyrOptions);
+      <div class="controls">
+        <button id="playPause" aria-label="Play/Pause">▶️/⏸️</button>
+        <button id="mute" aria-label="Mute/Unmute">🔊/🔇</button>
 
-    if (m3u8Url && m3u8Url.endsWith('.m3u8')) {
-      if (Hls.isSupported()) {
-        window.hls = new Hls();
-        window.hls.loadSource(m3u8Url);
-        window.hls.attachMedia(video);
-        window.hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
-          const availableQualities = window.hls.levels.map(lvl => lvl.height).sort((a, b) => a - b);
-          const uniqueQualities = [...new Set(availableQualities)];
-          player.options.quality.options = uniqueQualities;
-          player.quality = uniqueQualities.includes(240) ? 240 : uniqueQualities[0];
-          player.config.quality.options = uniqueQualities;
-          const level240 = window.hls.levels.findIndex(lvl => lvl.height === 240);
-          window.hls.currentLevel = level240 !== -1 ? level240 : 0;
-        });
+        <label class="vgroup">
+          <span>ভলিউম</span>
+          <input id="volume" type="range" min="0" max="1" step="0.01" value="1">
+        </label>
 
-        player.on('qualitychange', event => {
-          let newQuality = event.detail.plyr.quality;
-          let level = window.hls.levels.findIndex(lvl => lvl.height === newQuality);
-          window.hls.currentLevel = level;
-        });
+        <label class="vgroup">
+          <span>গতি</span>
+          <select id="speed">
+            <option value="0.5">0.5×</option>
+            <option value="0.75">0.75×</option>
+            <option value="1" selected>1×</option>
+            <option value="1.25">1.25×</option>
+            <option value="1.5">1.5×</option>
+            <option value="2">2×</option>
+          </select>
+        </label>
 
-      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = m3u8Url;
-      } else {
-        alert("দুঃখিত, আপনার ব্রাউজার ভিডিও ফরম্যাট সাপোর্ট করেনা।");
-      }
-    } else {
-      video.removeAttribute('src');
-      if (window.hls) window.hls.detachMedia();
-    }
-  </script>
+        <label class="vgroup">
+          <span>কোয়ালিটি</span>
+          <select id="quality">
+            <option value="auto" selected>Auto</option>
+          </select>
+        </label>
+
+        <button id="pip" aria-label="Picture in Picture">PiP</button>
+        <button id="fullscreen" aria-label="Fullscreen">⛶</button>
+      </div>
+
+      <div class="timeline">
+        <input id="seek" type="range" min="0" max="100" step="0.1" value="0">
+        <div class="time">
+          <span id="currentTime">00:00</span> / <span id="duration">--:--</span>
+          <span id="liveBadge" class="live">LIVE</span>
+        </div>
+      </div>
+
+      <div class="src-bar">
+        <input id="srcInput" type="text" placeholder="m3u8 লিংক পেস্ট করুন…">
+        <button id="loadBtn">Load</button>
+        <small>URL এ <code>?i=</code> বা <code>/i=</code> এর পরে m3u8 দিলে অটো লোড হবে</small>
+      </div>
+
+      <noscript>এই প্লেয়ার চালাতে জাভাস্ক্রিপ্ট অন করুন।</noscript>
+    </section>
+  </main>
+
+  <footer class="container foot">
+    <small>HLS powered by hls.js. অন্য ডোমেইনের লিংকে CORS দরকার হতে পারে।</small>
+  </footer>
 </body>
 </html>
