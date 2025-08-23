@@ -1,75 +1,102 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sayan TV — Live m3u8 Player</title>
-  <link rel="stylesheet" href="style.css" />
-  <!-- hls.js CDN -->
-  <script defer src="https://cdn.jsdelivr.net/npm/hls.js@1.5.8/dist/hls.min.js"></script>
-  <script defer src="app.js"></script>
+  <title>Live Stream Player</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+  <meta name="referrer" content="no-referrer"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.6.12/dist/plyr.css"/>
+  <style>
+    body {
+      background-color: #000000;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    html, body {
+      height: 100%;
+    }
+    video {
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+    }
+    .plyr {
+      height: 100%;
+    }
+  </style>
 </head>
 <body>
-  <header class="container">
-    <h1 class="brand">sayan tv</h1>
-  </header>
+  <video id="player" autoplay muted controls crossorigin playsinline></video>
 
-  <main class="container">
-    <section class="player-card">
-      <video id="video" playsinline></video>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.1.4/dist/hls.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/plyr@3.6.12/dist/plyr.min.js"></script>
+  <script>
+    // Helper function to get m3u8 URL from /ios=... part
+    function getM3U8FromURL() {
+      // Example: /ios=https://example.com/video.m3u8
+      const path = window.location.pathname + window.location.search + window.location.hash;
+      const match = path.match(/\/ios=([^\/\?\#]+)/i);
+      if (match && match[1]) {
+        // Decode URL-encoded strings
+        return decodeURIComponent(match[1]);
+      }
+      return null;
+    }
 
-      <div class="controls">
-        <button id="playPause" aria-label="Play/Pause">▶️/⏸️</button>
-        <button id="mute" aria-label="Mute/Unmute">🔊/🔇</button>
+    document.addEventListener('DOMContentLoaded', () => {
+      const video = document.getElementById('player');
+      const source = getM3U8FromURL();
 
-        <label class="vgroup">
-          <span>ভলিউম</span>
-          <input id="volume" type="range" min="0" max="1" step="0.01" value="1">
-        </label>
+      if (!source) {
+        document.body.innerHTML = '<p style="color:#fff;text-align:center;margin-top:50px;">No video link found.<br>Use format: <code>/ios=YOUR_M3U8_URL</code></p>';
+        return;
+      }
 
-        <label class="vgroup">
-          <span>গতি</span>
-          <select id="speed">
-            <option value="0.5">0.5×</option>
-            <option value="0.75">0.75×</option>
-            <option value="1" selected>1×</option>
-            <option value="1.25">1.25×</option>
-            <option value="1.5">1.5×</option>
-            <option value="2">2×</option>
-          </select>
-        </label>
+      if (Hls.isSupported()) {
+        const hls = new Hls({ maxMaxBufferLength: 100 });
+        hls.loadSource(source);
+        hls.attachMedia(video);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => {
+          const availableQualities = hls.levels.map(level => level.height);
+          const defaultQuality = availableQualities[0];
 
-        <label class="vgroup">
-          <span>কোয়ালিটি</span>
-          <select id="quality">
-            <option value="auto" selected>Auto</option>
-          </select>
-        </label>
+          const player = new Plyr(video, {
+            controls: ['play-large', 'play', 'mute', 'volume', 'settings', 'fullscreen'],
+            quality: {
+              default: defaultQuality,
+              options: availableQualities,
+              forced: true,
+              onChange: (quality) => {
+                hls.levels.forEach((level, levelIndex) => {
+                  if (level.height === quality) {
+                    hls.currentLevel = levelIndex;
+                  }
+                });
+              }
+            }
+          });
 
-        <button id="pip" aria-label="Picture in Picture">PiP</button>
-        <button id="fullscreen" aria-label="Fullscreen">⛶</button>
-      </div>
+          // Fullscreen change event listener for screen orientation lock
+          document.addEventListener('fullscreenchange', () => {
+            if (document.fullscreenElement) {
+              if (screen.orientation && screen.orientation.lock) {
+                screen.orientation.lock('landscape').catch(() => {});
+              }
+            } else {
+              if (screen.orientation && screen.orientation.unlock) {
+                screen.orientation.unlock().catch(() => {});
+              }
+            }
+          });
+        });
 
-      <div class="timeline">
-        <input id="seek" type="range" min="0" max="100" step="0.1" value="0">
-        <div class="time">
-          <span id="currentTime">00:00</span> / <span id="duration">--:--</span>
-          <span id="liveBadge" class="live">LIVE</span>
-        </div>
-      </div>
-
-      <div class="src-bar">
-        <input id="srcInput" type="text" placeholder="m3u8 লিংক পেস্ট করুন…">
-        <button id="loadBtn">Load</button>
-        <small>URL এ <code>?i=</code> বা <code>/i=</code> এর পরে m3u8 দিলে অটো লোড হবে</small>
-      </div>
-
-      <noscript>এই প্লেয়ার চালাতে জাভাস্ক্রিপ্ট অন করুন।</noscript>
-    </section>
-  </main>
-
-  <footer class="container foot">
-    <small>HLS powered by hls.js. অন্য ডোমেইনের লিংকে CORS দরকার হতে পারে।</small>
-  </footer>
+      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = source;
+        new Plyr(video);
+      } else {
+        document.body.innerHTML = '<p>Your browser does not support HLS playback.</p>';
+      }
+    });
+  </script>
 </body>
 </html>
