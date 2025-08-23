@@ -1,13 +1,9 @@
 export default {
-  async fetch(request) {
+  async fetch(request, env, ctx) {
     const { pathname } = new URL(request.url);
-
-    // Extract m3u8 link from /ios=... in pathname
     const match = pathname.match(/\/ios=([^\/\?\#]+)/i);
     let m3u8 = null;
     if (match && match[1]) m3u8 = decodeURIComponent(match[1]);
-
-    // HTML response
     let html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,12 +11,7 @@ export default {
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
   <meta name="referrer" content="no-referrer"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.6.12/dist/plyr.css"/>
-  <style>
-    body { background:#000; margin:0; padding:0; overflow:hidden;}
-    html,body { height:100%;}
-    video { width:100%; height:100%; max-width:100%;}
-    .plyr { height:100%; }
-  </style>
+  <style>body{background:#000;margin:0;padding:0;overflow:hidden;}html,body{height:100%;}video{width:100%;height:100%;max-width:100%;}.plyr{height:100%;}</style>
 </head>
 <body>
   <video id="player" autoplay muted controls crossorigin playsinline></video>
