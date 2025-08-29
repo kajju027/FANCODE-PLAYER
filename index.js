@@ -59,7 +59,7 @@ export default {
   <div id="eye-icon" title="Show visits">&#169;</div>
   <div id="visit-popup">
     <span id="visit-popup-close">&times;</span>
-    <img src="https://visit-counter.vercel.app/counter.png?page=https%3A%2F%2Fjio-fancode.pages.dev%2F&s=40&c=ff14c4&bg=00000000&no=8&ff=digi&tb=&ta=" alt="visits">
+    <img src="https://visit-counter.vercel.app/counter.png?page=https%3A%2F%2Fjio-fancode.pages.dev&s=49&c=ff5b29&bg=00000000&no=1&ff=digii&tb=&ta=" alt="visits">
   </div>
   <video id="player" controls autoplay playsinline style="background:#000"></video>
   <div id="error" class="error-message" style="display:none;"></div>
