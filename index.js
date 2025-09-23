@@ -92,8 +92,8 @@ export default {
         <small>Visitors</small>
       </div>
       <div class="icon-btn" id="share-btn"><div class="ico">⫸</div><small>𝗦𝗵𝗮𝗿𝗲</small></div>
-      <div class="icon-btn" onclick="location.href='https://famcode.onrender.com/'░"><div class="ico"> </div><small>𝗪𝗮𝘁𝗰𝗵 𝗠𝗼𝗿𝗲</small></div>
-      <div class="icon-btn" onclick="location.href='https://wa.me/918972767390?text=I'm%20to%20Fancode%20visitor'"><div class="ico">👥</div><small>𝗖𝗼𝗻𝘁𝗮𝗰𝘁 𝗨𝘀</small></div>
+      <div class="icon-btn" onclick="location.href='https://famcode.onrender.com/'"><div class="ico">█</div><small>𝗪𝗮𝘁𝗰𝗵 𝗠𝗼𝗿𝗲</small></div>
+      <div class="icon-btn" onclick="location.href='https://wa.me/918972767390?text=I'm%20to%20Fancode%20visitor'"><div class="ico">☜</div><small>𝗖𝗼𝗻𝘁𝗮𝗰𝘁 𝗨𝘀</small></div>
     </div>
 
     <div id="error" style="color:#fff;text-align:center;margin-top:18px;display:none;"></div>
