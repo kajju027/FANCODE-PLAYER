@@ -38,6 +38,13 @@ export default {
       opacity:0.9;
     }
 
+    /* Make play button double size */
+    .plyr__control.plyr__control--overlaid {
+      width: 120px !important;
+      height: 120px !important;
+      font-size: 42px !important;
+    }
+
     /* Extra section */
     .extras {
       display: grid;
@@ -123,11 +130,15 @@ export default {
 
         hls.on(Hls.Events.MANIFEST_PARSED, function() {
           const availableQualities = hls.levels.map(l=>l.height).filter(Boolean).sort((a,b)=>a-b);
+
+          // Force default 360p if available, else lowest
+          let defaultQ = availableQualities.includes(360) ? 360 : availableQualities[0];
+
           window.player = new Plyr(video, {
             controls: ['play-large','rewind','play','fast-forward','progress','current-time','mute','volume','settings','pip','airplay','fullscreen'],
             settings: ['quality'],
             quality: {
-              default: 360,
+              default: defaultQ,
               options: availableQualities,
               forced: true,
               onChange: q=>{
@@ -136,6 +147,10 @@ export default {
               }
             }
           });
+
+          // Set default quality immediately
+          const idx = hls.levels.findIndex(l=>l.height===defaultQ);
+          if (idx !== -1) hls.currentLevel = idx;
         });
       } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
         video.src = m3u8;
