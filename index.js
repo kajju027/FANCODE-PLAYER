@@ -5,320 +5,353 @@ export default {
     let m3u8 = null;
     const iosMatch = path.match(/^\/ios=(.+)$/);
     if (iosMatch && iosMatch[1]) {
-      try {
-        m3u8 = decodeURIComponent(iosMatch[1]);
-      } catch (e) {
-        m3u8 = iosMatch[1];
-      }
+      try { m3u8 = decodeURIComponent(iosMatch[1]); }
+      catch(e){ m3u8 = iosMatch[1]; }
     }
-
     const safeM3u8 = m3u8 ? m3u8.replace(/`/g, '\\`') : null;
 
     const html = `<!doctype html>
 <html lang="bn">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-<title>FANCODE LIVE — Player</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>FANCODE LIVE — Modern Player</title>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.6.12/dist/plyr.css"/>
 
 <style>
+  /* --- Theme --- */
   :root{
-    --bg:#000;
-    --card:#111;
-    --accent: #ffd800; /* হলুদ (progress) */
-    --muted:#9aa0a6;
+    --bg: #060607;
+    --panel: #0f1113;
+    --muted: #9aa0a6;
+    --accent: #ffd600; /* yellow accent for progress & highlights */
+    --glass: rgba(255,255,255,0.03);
+    --shadow: 0 12px 34px rgba(2,6,23,0.7);
+    --radius: 14px;
   }
-  html,body{height:100%;margin:0;background:var(--bg);color:#fff;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
-  .container{max-width:1100px;margin:12px auto 40px;padding:0 12px;display:flex;flex-direction:column;gap:12px;}
-  /* Player area */
-  .player-wrap{position:relative;display:block;background:#000;border-radius:12px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.6);}
-  video, audio{width:100%;height:calc(70vh);display:block;background:#000;outline:none;}
-  /* Move player slightly up visually by negative margin effect */
-  .player-wrap { transform: translateY(-6px); }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:linear-gradient(180deg,#040405 0%, #0b0b0d 100%);font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;color:#e8eef6;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1100px;margin:18px auto;padding:12px;display:flex;flex-direction:column;gap:14px;}
+  /* Player card */
+  .player-card{
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow:hidden;
+    border: 1px solid rgba(255,255,255,0.03);
+  }
+  .player-top{
+    display:flex;align-items:center;justify-content:space-between;padding:12px 14px;
+    gap:8px;
+  }
+  .title {font-weight:700;font-size:16px}
+  .meta {color:var(--muted);font-size:13px}
 
-  /* Plyr small controls style */
+  /* video area */
+  .video-area{background:#000;position:relative;}
+  video, audio{width:100%;height:62vh;max-height:72vh;display:block;background:#000;outline:none;}
+  @media(max-width:880px){ video, audio{height:44vh;} }
+
+  /* Plyr custom sizes */
   .plyr--full-ui .plyr__controls { padding:6px 8px; }
-  .plyr__control { padding:6px !important; border-radius:8px; min-width:34px; min-height:34px; }
-  .plyr__controls .plyr__control svg { width:16px; height:16px; }
+  .plyr__control{ padding:6px !important; border-radius:8px; min-width:36px; min-height:36px; }
+  .plyr__controls .plyr__control svg{ width:16px;height:16px; }
 
-  /* Override played progress color to yellow (accent) */
+  /* override progress played color to yellow */
   .plyr__progress--played { background: var(--accent) !important; }
-  .plyr__seek-tooltip { background: rgba(0,0,0,0.85); color:#fff; }
 
-  /* Error */
-  .error-message { text-align:center;padding:18px;color:#fff;background:#1a1a1a;border-radius:8px;display:none; }
-
-  /* small visitor toggle */
-  #visit-toggle { position: fixed; right: 16px; bottom: 16px; z-index:1200; background: rgba(255,255,255,0.06); padding:8px;border-radius:10px; backdrop-filter: blur(6px); cursor:pointer; display:flex; align-items:center; gap:8px; border:1px solid rgba(255,255,255,0.04); }
-  #visit-toggle span { font-size:13px; color:var(--muted); }
-  #visit-box { position:fixed; right:16px; bottom:64px; z-index:1200; display:none; background:rgba(20,20,20,0.95); padding:10px 12px; border-radius:10px; box-shadow:0 8px 30px rgba(0,0,0,0.6); }
-  #visit-box img{ height:28px; display:block; }
-
-  /* Extras (cards) */
-  .extras { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:6px; }
-  .card { background:var(--card); padding:12px 10px; border-radius:10px; text-align:center; font-weight:600; cursor:pointer; user-select:none; font-size:13px; box-shadow:0 6px 18px rgba(0,0,0,0.6); transition:transform .14s ease, box-shadow .14s ease; display:flex;flex-direction:column;align-items:center;gap:8px; }
-  .card:hover{ transform:translateY(-6px); box-shadow:0 14px 30px rgba(0,0,0,0.7); }
-  .card small { color:var(--muted); font-weight:500; display:block; }
-
-  /* make cards visually compact (small buttons) */
-  .card .mini { font-size:12px; padding:6px 10px; border-radius:8px; background:rgba(255,255,255,0.03); }
-
-  /* Responsive */
-  @media (max-width:880px){
-    .extras { grid-template-columns:repeat(2,1fr); }
-    video, audio { height:46vh; }
+  /* small buttons row under player */
+  .mini-actions{display:flex;gap:8px;align-items:center;padding:10px 14px;background:transparent;}
+  .btn {
+    background:var(--glass); border:1px solid rgba(255,255,255,0.04);
+    color:#fff;padding:8px 10px;border-radius:10px;font-weight:600;font-size:13px;cursor:pointer;display:inline-flex;gap:8px;align-items:center;
+    transition:transform .12s ease, box-shadow .12s ease;
   }
-  @media (max-width:480px){
-    .extras { grid-template-columns:repeat(1,1fr); gap:8px; }
-    .card { padding:10px; font-size:14px; }
-  }
+  .btn:hover{ transform:translateY(-4px); box-shadow:0 10px 26px rgba(0,0,0,0.5); }
+  .btn.small{ padding:6px 8px;font-size:12px; border-radius:8px; }
+
+  /* extras area (like YouTube suggestions) */
+  .extras { display:flex; gap:10px; margin-top:8px; overflow-x:auto; padding-bottom:6px;}
+  .card { flex:0 0 210px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px; padding:10px; min-height:110px; display:flex;flex-direction:column; justify-content:space-between; cursor:pointer; border:1px solid rgba(255,255,255,0.03); }
+  .thumb { height:86px; border-radius:8px; background:#020202; display:flex;align-items:center;justify-content:center;color:var(--muted); font-size:12px; }
+  .card h4{ margin:8px 0 4px; font-size:14px; }
+  .card p{ margin:0; color:var(--muted); font-size:12px; }
+
+  /* visitor counter popup */
+  #visitToggle{ position:fixed; right:18px; bottom:18px; z-index:1400; }
+  #visitToggle .btn{ display:flex; align-items:center; gap:8px; background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); }
+  #visitPopup{ position:fixed; right:18px; bottom:72px; z-index:1400; display:none; background:var(--panel); padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.03); box-shadow:0 12px 34px rgba(0,0,0,0.6); }
+  #visitPopup img{ height:28px; display:block; }
+
+  /* error notice */
+  .error { padding:12px; background:#1a0d0d;border-radius:10px;color:#ffd6d6;font-weight:600; display:none; }
+
+  /* small helper text */
+  .hint{color:var(--muted);font-size:12px;margin-top:4px}
 </style>
 </head>
 <body>
-  <div class="container">
-    <div class="player-wrap" id="playerWrap">
-      <!-- video element (or audio for mp3) will be injected/used -->
-      <video id="player" playsinline controls crossorigin="anonymous"></video>
-      <div id="error" class="error-message"></div>
-    </div>
+  <div class="wrap">
+    <div class="player-card" role="main" aria-label="Live player">
+      <div class="player-top">
+        <div>
+          <div class="title">FANCODE LIVE — Stream</div>
+          <div class="meta">Auto-play | Default: 360p (if available) | Robust HLS recovery</div>
+        </div>
+        <div class="meta">Powered by Plyr • HLS.js</div>
+      </div>
 
-    <div class="extras" id="extras">
-      <a class="card" id="watchMore" href="https://example.com/watch-more" target="_blank" rel="noopener">
-        <div class="mini">📺 Watch More</div>
-        <small>Latest streams & replays</small>
-      </a>
+      <div class="video-area">
+        <video id="player" playsinline controls crossorigin="anonymous" preload="auto"></video>
+        <div id="error" class="error" role="alert"></div>
+      </div>
 
-      <button class="card" id="fairBtn" type="button">
-        <div class="mini">⚖️ Share / Fair</div>
-        <small>Share this page</small>
-      </button>
+      <div class="mini-actions" aria-hidden="false">
+        <button id="shareBtn" class="btn small" title="Share page">🔗 Share</button>
+        <button id="visitBtn" class="btn small" title="Toggle visitors">👁‍🗨 Visitors</button>
+        <button id="retryBtn" class="btn small" title="Retry stream">↻ Retry</button>
+        <div style="flex:1"></div>
+        <div class="hint">No button required — stream starts automatically.</div>
+      </div>
 
-      <a class="card" id="favLink" href="https://example.com/favourites" target="_blank" rel="noopener">
-        <div class="mini">⭐ Favourite</div>
-        <small>Add to your list</small>
-      </a>
+      <div style="padding:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="font-weight:700">Watch More</div>
+          <div style="color:var(--muted);font-size:13px">Suggested</div>
+        </div>
 
-      <a class="card" id="contactLink" href="https://example.com/contact" target="_blank" rel="noopener">
-        <div class="mini">📞 Contact</div>
-        <small>Get support</small>
-      </a>
+        <div class="extras" id="extras">
+          <!-- Cards inserted by JS -->
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Visitor toggle + box -->
-  <div id="visit-toggle" title="Visitor counter">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="opacity:.95"><path d="M12 5c-7 0-11 6.5-11 7s4 7 11 7 11-6.5 11-7-4-7-11-7z" stroke="#fff" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <span>Visitors</span>
+  <!-- Visitor popup -->
+  <div id="visitToggle">
+    <button id="visitToggleBtn" class="btn small">👁‍🗨 Show Visitors</button>
   </div>
-  <div id="visit-box">
-    <button id="closeVisit" style="float:right;background:transparent;border:none;color:#fff;font-size:16px;cursor:pointer;margin:-6px -6px 6px 0">×</button>
+  <div id="visitPopup">
+    <button id="closeVisit" class="btn small" style="float:right;padding:4px 8px;margin:-8px -8px 8px 0">✕</button>
     <div style="clear:both"></div>
-    <img id="visit-img" src="https://visit-counter.vercel.app/counter.png?page=https%3A%2F%2Fjio-fancode.pages.dev&s=46&c=00ffea&bg=00000000&no=1&ff=digii" alt="visits">
+    <img id="visitImg" src="https://visit-counter.vercel.app/counter.png?page=https%3A%2F%2Fjio-fancode.pages.dev&s=55&c=ffd600&bg=00000000&no=1&ff=digii" alt="visits">
   </div>
 
-<script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.0/dist/hls.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/plyr@3.6.12/dist/plyr.min.js"></script>
+  <!-- libs -->
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.0/dist/hls.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/plyr@3.6.12/dist/plyr.min.js"></script>
+
 <script>
-  (function(){
-    const rawURL = ${safeM3u8 ? '`' + safeM3u8 + '`' : 'null'};
-    const video = document.getElementById('player');
-    const errorDiv = document.getElementById('error');
-    const visitToggle = document.getElementById('visit-toggle');
-    const visitBox = document.getElementById('visit-box');
-    const closeVisit = document.getElementById('closeVisit');
+(function(){
+  const raw = ${safeM3u8 ? '`' + safeM3u8 + '`' : 'null'};
+  const playerEl = document.getElementById('player');
+  const err = document.getElementById('error');
+  const shareBtn = document.getElementById('shareBtn');
+  const visitBtn = document.getElementById('visitToggleBtn');
+  const visitPopup = document.getElementById('visitPopup');
+  const closeVisit = document.getElementById('closeVisit');
+  const retryBtn = document.getElementById('retryBtn');
+  const extras = document.getElementById('extras');
 
-    // Visitor toggle behavior
-    visitToggle.addEventListener('click', ()=> {
-      visitBox.style.display = visitBox.style.display === 'block' ? 'none' : 'block';
-    });
-    closeVisit.addEventListener('click', ()=> visitBox.style.display = 'none');
+  // Small suggestion cards (replace links/titles later)
+  const suggestions = [
+    {title:'Match Highlights',desc:'Replays & best moments',link:'https://example.com/highlights'},
+    {title:'Upcoming Streams',desc:'Schedule & fixtures',link:'https://example.com/schedule'},
+    {title:'Favourite List',desc:'Your saved streams',link:'https://example.com/favourites'},
+    {title:'Support / Contact',desc:'Get help',link:'https://example.com/contact'}
+  ];
+  // render suggestions
+  suggestions.forEach(s => {
+    const c = document.createElement('a');
+    c.className = 'card';
+    c.href = s.link; c.target = '_blank'; c.rel = 'noopener';
+    c.innerHTML = '<div class="thumb">THUMB</div><div><h4>'+s.title+'</h4><p>'+s.desc+'</p></div>';
+    extras.appendChild(c);
+  });
 
-    // Card links (replaceable by you later)
-    document.getElementById('watchMore').href = "https://example.com/watch-more"; // change later
-    document.getElementById('favLink').href = "https://example.com/favourites";
-    document.getElementById('contactLink').href = "https://example.com/contact";
+  // visitor popup toggle
+  visitBtn.addEventListener('click', ()=> {
+    visitPopup.style.display = visitPopup.style.display === 'block' ? 'none' : 'block';
+  });
+  document.getElementById('visitToggleBtn').addEventListener('click', ()=> {
+    visitPopup.style.display = visitPopup.style.display === 'block' ? 'none' : 'block';
+  });
+  closeVisit.addEventListener('click', ()=> visitPopup.style.display = 'none');
 
-    // Fair (share) behavior: will share this site link (current origin)
-    document.getElementById('fairBtn').addEventListener('click', async () => {
-      const shareUrl = location.href;
+  // share button: navigator.share OR copy link to clipboard
+  shareBtn.addEventListener('click', async () => {
+    const shareUrl = location.href;
+    try {
       if (navigator.share) {
-        try {
-          await navigator.share({ title: document.title, url: shareUrl });
-        } catch (e) {
-          // user cancelled or error -> fallback to copy
-          copyToClipboard(shareUrl);
-          alert('Link copied to clipboard.');
-        }
+        await navigator.share({title: document.title, url: shareUrl});
       } else {
-        copyToClipboard(shareUrl);
+        await navigator.clipboard.writeText(shareUrl);
         alert('Link copied to clipboard.');
       }
+    } catch(e) {
+      try { await navigator.clipboard.writeText(shareUrl); alert('Link copied to clipboard.'); } catch(err){ alert('Cannot copy link.'); }
+    }
+  });
+
+  // retry button: reloads the stream attempt
+  retryBtn.addEventListener('click', ()=> initStream(true));
+
+  function showError(msg) {
+    err.style.display = 'block';
+    err.textContent = msg;
+  }
+  function hideError() { err.style.display = 'none'; err.textContent = ''; }
+
+  if (!raw) {
+    playerEl.style.display = 'none';
+    showError('No stream provided. Use format: /ios=URL (URL-encode the value).');
+    return;
+  }
+
+  // choose default level index preferring 360
+  function findDefaultLevel(levels) {
+    if (!levels || !levels.length) return -1;
+    let idx = levels.findIndex(l => l.height === 360);
+    if (idx !== -1) return idx;
+    // nearest to 360
+    let best = 0, bestDiff = Infinity;
+    levels.forEach((l,i)=> {
+      const h = l.height || 0;
+      const d = Math.abs(h - 360);
+      if (d < bestDiff) { bestDiff = d; best = i; }
     });
+    return best;
+  }
 
-    function copyToClipboard(text){
-      try {
-        navigator.clipboard.writeText(text);
-      } catch (e) {
-        const ta = document.createElement('textarea');
-        ta.value = text; document.body.appendChild(ta);
-        ta.select(); document.execCommand('copy'); ta.remove();
-      }
-    }
+  // main init
+  let hlsInstance = null;
+  let plyrInstance = null;
 
-    // graceful show error
-    function showError(msg){
-      errorDiv.style.display = 'block';
-      errorDiv.textContent = msg;
-    }
+  async function initStream(retry=false) {
+    hideError();
+    // cleanup previous
+    try{ if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; } } catch(e){}
+    try{ if (plyrInstance) { plyrInstance.destroy(); plyrInstance = null; } } catch(e){}
 
-    // If no source provided, show usage hint
-    if (!rawURL) {
-      video.style.display = 'none';
-      showError('No video link found. Use format: /ios=YOUR_M3U8_URL  (apply URL-encoding)');
+    // If it's an mp3 link, use audio element for UX
+    const lower = raw.toLowerCase();
+    const isMp3 = lower.includes('.mp3');
+    const isMp4 = lower.includes('.mp4');
+    const looksLikeHls = lower.includes('.m3u8') || lower.includes('.m3u');
+
+    if (isMp3) {
+      const audio = document.createElement('audio');
+      audio.controls = true; audio.autoplay = true; audio.preload = 'auto';
+      audio.src = raw;
+      playerEl.parentNode.replaceChild(audio, playerEl);
+      playerEl = audio;
+      plyrInstance = new Plyr(audio, { controls: ['play', 'progress', 'current-time','volume'] });
+      audio.addEventListener('error', ()=> showError('Could not load audio.'));
       return;
     }
 
-    // Helper: choose default level index (prefers 360)
-    function findDefaultLevel(levels) {
-      if (!levels || levels.length === 0) return -1;
-      // try find exact 360
-      let idx = levels.findIndex(l => l.height === 360);
-      if (idx !== -1) return idx;
-      // otherwise try nearest to 360
-      const heights = levels.map(l => l.height || 0);
-      let nearest = 0, bestDiff = Infinity;
-      heights.forEach((h,i) => {
-        const d = Math.abs((h||0) - 360);
-        if (d < bestDiff) { bestDiff = d; nearest = i; }
-      });
-      return nearest;
+    // If browser supports HLS natively and it's m3u8, set src
+    if (playerEl.canPlayType && playerEl.canPlayType('application/vnd.apple.mpegurl') && looksLikeHls) {
+      playerEl.src = raw;
+      plyrInstance = new Plyr(playerEl, { controls: ['play-large','play','progress','current-time','mute','volume','settings','fullscreen'], settings:['quality'] });
+      playerEl.addEventListener('loadedmetadata', ()=> { playerEl.play().catch(()=>{}); });
+      playerEl.addEventListener('error', ()=> showError('Could not load video (native HLS).'));
+      return;
     }
 
-    // If the URL looks like .mp3 or audio only, use audio tag fallback
-    const isMp3 = rawURL.toLowerCase().includes('.mp3');
-    // For some direct mp4 or other progressive formats, the browser may handle them natively
-    const isMp4 = rawURL.toLowerCase().includes('.mp4');
-
-    if (window.Hls && Hls.isSupported() && !isMp3 && (rawURL.toLowerCase().includes('.m3u8') || rawURL.toLowerCase().includes('.m3u'))) {
-      // HLS.js path
-      const hls = new Hls({
+    // Use HLS.js for .m3u8 or when Hls.isSupported()
+    if (window.Hls && Hls.isSupported() && looksLikeHls) {
+      hlsInstance = new Hls({
         maxBufferLength: 90,
         liveSyncDuration: 30,
+        fragLoadingMaxRetry: 8,
         fragLoadingRetryDelay: 1000,
-        fragLoadingMaxRetry: 6,
         manifestLoadingMaxRetry: 6,
+        manifestLoadingRetryDelay: 1000,
         enableWorker: true,
-        lowLatencyMode: false,
+        lowLatencyMode: false
       });
 
-      let recoverAttempt = 0;
+      let networkAttempts = 0;
+      hlsInstance.attachMedia(playerEl);
+      hlsInstance.on(Hls.Events.MEDIA_ATTACHED, ()=> {
+        try { hlsInstance.loadSource(raw); } catch(e){ showError('Load failed.'); }
+      });
 
-      function attach() {
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MEDIA_ATTACHED, function(){
-          hls.loadSource(rawURL);
-        });
-      }
-
-      hls.on(Hls.Events.ERROR, function(event, data) {
+      hlsInstance.on(Hls.Events.ERROR, (evt, data) => {
         console.warn('HLS error', data);
         if (data && data.fatal) {
-          switch (data.type) {
-            case Hls.ErrorTypes.NETWORK_ERROR:
-              // try to reload
-              recoverAttempt++;
-              if (recoverAttempt <= 8) {
-                console.warn('network error — retrying load', recoverAttempt);
-                setTimeout(()=>{ try{ hls.startLoad(); hls.loadSource(rawURL);}catch(e){} }, 1000 * recoverAttempt);
-              } else {
-                showError('Network error — cannot load stream.');
-                hls.destroy();
-              }
-              break;
-            case Hls.ErrorTypes.MEDIA_ERROR:
-              hls.recoverMediaError();
-              break;
-            default:
-              showError('Could not load video. Try a different stream.');
-              hls.destroy();
-              break;
+          if (data.type === Hls.ErrorTypes.NETWORK_ERROR) {
+            networkAttempts++;
+            if (networkAttempts <= 8) {
+              setTimeout(()=> { try{ hlsInstance.startLoad(); hlsInstance.loadSource(raw); } catch(e){} }, 1000 * networkAttempts);
+            } else {
+              showError('Network: cannot load stream.');
+              hlsInstance.destroy();
+            }
+          } else if (data.type === Hls.ErrorTypes.MEDIA_ERROR) {
+            try { hlsInstance.recoverMediaError(); } catch(e){ showError('Media error.'); }
+          } else {
+            showError('Playback error — try another stream.');
+            hlsInstance.destroy();
           }
         }
       });
 
-      hls.on(Hls.Events.MANIFEST_PARSED, function(_, data) {
-        // Setup Plyr with qualities
-        const available = hls.levels.map(l=>l.height).filter(Boolean).sort((a,b)=>a-b);
-        // pick default level index
-        const defaultIdx = findDefaultLevel(hls.levels);
-        if (defaultIdx !== -1) hls.currentLevel = defaultIdx;
-
-        // Plyr instance and quality integration
-        window.player = new Plyr(video, {
+      hlsInstance.on(Hls.Events.MANIFEST_PARSED, ()=> {
+        const levels = hlsInstance.levels || [];
+        const heights = levels.map(l=>l.height).filter(Boolean).sort((a,b)=>a-b);
+        const defaultIdx = findDefaultLevel(levels);
+        if (defaultIdx !== -1) hlsInstance.currentLevel = defaultIdx;
+        // Plyr + quality integration
+        plyrInstance = new Plyr(playerEl, {
           controls: ['play-large','rewind','play','fast-forward','progress','current-time','mute','volume','settings','pip','airplay','fullscreen'],
           settings: ['quality'],
           quality: {
-            default: hls.levels[defaultIdx] ? hls.levels[defaultIdx].height : available[0],
-            options: available.length ? available : [360],
+            default: levels[defaultIdx] ? levels[defaultIdx].height : (heights[0] || 360),
+            options: heights.length ? heights : [360],
             forced: true,
-            onChange: q=> {
-              const idx = hls.levels.findIndex(l => l.height === q);
-              if (idx !== -1) hls.currentLevel = idx;
+            onChange: q => {
+              const idx = hlsInstance.levels.findIndex(l => l.height === q);
+              if (idx !== -1) hlsInstance.currentLevel = idx;
             }
           }
         });
-
-        // Try to autoplay
-        video.play().catch(()=>{ /* user gesture may be required */ });
+        // autoplay attempt
+        playerEl.play().catch(()=>{ /* user gesture maybe required */ });
       });
 
-      hls.on(Hls.Events.LEVEL_SWITCHED, function(evt, data){
-        // nothing extra for now
-      });
-
-      attach();
-      // safety: if manifest or segments fail after some time, show error
+      // fallback: after time, if no levels found show hint but keep trying
       setTimeout(()=> {
-        if (!hls.levels || hls.levels.length === 0) {
-          // still empty -> show message but allow manual attempts
-          // keep video visible; let user try
-          console.warn('No levels found in HLS manifest.');
+        if (hlsInstance && (!hlsInstance.levels || hlsInstance.levels.length === 0)) {
+          console.warn('No levels in manifest yet.');
         }
-      }, 8000);
+      }, 7000);
 
-    } else if (isMp3 || isMp4 || video.canPlayType('application/vnd.apple.mpegurl')) {
-      // Browser native path or audio
-      if (isMp3) {
-        // replace with audio element for better UX on audio-only streams
-        const aud = document.createElement('audio');
-        aud.controls = true;
-        aud.autoplay = true;
-        aud.style.width = '100%';
-        aud.src = rawURL;
-        const wrap = document.getElementById('playerWrap');
-        wrap.replaceChild(aud, video);
-        window.player = new Plyr(aud, { controls: ['play','progress','current-time','volume'] });
-        aud.addEventListener('error', ()=> showError('Could not load audio stream.'));
-      } else {
-        // mp4 or native m3u8-playable
-        video.src = rawURL;
-        window.player = new Plyr(video, {
-          controls: ['play-large','play','progress','current-time','mute','volume','settings','fullscreen'],
-          settings: ['quality']
-        });
-        video.addEventListener('error', ()=> showError('Could not load video. Try another stream.'));
-        video.addEventListener('loadedmetadata', ()=> {
-          video.play().catch(()=>{});
-        });
-      }
-    } else {
-      video.style.display = 'none';
-      showError('Your browser does not support HLS playback. Use a browser with HLS or provide a direct MP4/MP3 link.');
+      return;
     }
 
-  })();
+    // plain MP4 or unknown: try direct src
+    if (isMp4 || !looksLikeHls) {
+      playerEl.src = raw;
+      plyrInstance = new Plyr(playerEl, { controls: ['play-large','play','progress','current-time','mute','volume','settings','fullscreen'] });
+      playerEl.addEventListener('error', ()=> showError('Could not load video. Try different stream.'));
+      playerEl.addEventListener('loadedmetadata', ()=> playerEl.play().catch(()=>{}));
+      return;
+    }
+
+    // final fallback
+    showError('Your browser cannot play this stream. Provide a .m3u8 or mp4 link or use a modern browser.');
+  }
+
+  // Start immediately
+  initStream();
+
+  // Expose a small reload mechanism if user wants
+  window.__FANCODE_RELOAD = ()=> initStream(true);
+
+})();
 </script>
 </body>
 </html>`;
