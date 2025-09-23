@@ -17,8 +17,8 @@ export default {
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.6.12/dist/plyr.css"/>
   <style>
     body{background:#000;margin:0;padding:0;font-family:sans-serif;display:flex;flex-direction:column;min-height:100vh;}
-    video{width:100%;height:70vh;max-width:100%;background:#000;}
-    .plyr{height:70vh;}
+    video{width:100%;height:60vh;max-width:100%;background:#000;margin-top:8px;margin-bottom:8px;}
+    .plyr{height:60vh;}
     .error-message{color:#fff;text-align:center;margin-top:20px;font-size:1rem;}
 
     /* Extra section */
@@ -84,7 +84,9 @@ export default {
   <div class="extras">
     <div class="extra-card" onclick="location.href='https://famcode.onrender.com/'">📺 WATCH MORE</div>
     <div class="extra-card" onclick="location.href='https://wa.me/918972767390?text=Hi%2C%20I%20am%20coming%20from%20your%20FANCODE%20website'">⚖️ CONTACT US</div>
-    <div class="extra-card" id="visit-btn">⭐ VISITOR</div>
+    <div class="extra-card">
+      <img src="https://visit-counter.vercel.app/counter.png?page=https%3A%2F%2Fjio-fancode.pages.dev&s=42&c=ffff00&bg=00000000&no=1&ff=digii" alt="visits"/>
+    </div>
     <div class="extra-card" id="share-btn">🔗 SHARE</div>
   </div>
 
@@ -93,14 +95,8 @@ export default {
   <script>
     const video = document.getElementById('player');
     const errorDiv = document.getElementById('error');
-    const visitBtn = document.getElementById('visit-btn');
     const shareBtn = document.getElementById('share-btn');
     const m3u8 = ${m3u8 ? '`' + m3u8.replace(/`/g, '\\`') + '`' : 'null'};
-
-    // Visitor counter inside Favourite button
-    visitBtn.addEventListener('click', () => {
-      visitBtn.innerHTML = '<img src="https://visit-counter.vercel.app/counter.png?page=https%3A%2F%2Fjio-fancode.pages.dev&s=42&c=ffff00&bg=00000000&no=1&ff=digii" alt="visits"/>';
-    });
 
     // Share button
     shareBtn.addEventListener('click', async () => {
