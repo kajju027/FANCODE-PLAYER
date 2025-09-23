@@ -26,24 +26,36 @@ export default {
       --plyr-color-main: #ffcc00;
     }
 
+    /* Channel logo on video */
+    #channel-logo {
+      position:absolute;
+      top:8px;
+      right:8px;
+      width:48px;
+      height:auto;
+      border-radius:6px;
+      z-index:1000;
+      opacity:0.9;
+    }
+
     /* Extra section */
     .extras {
       display: grid;
       grid-template-columns: repeat(2,1fr);
-      gap: 10px;
-      padding: 14px;
+      gap: 8px;
+      padding: 12px;
       background:#111;
       flex-grow:1;
     }
     .extra-card {
       background:#1e1e1e;
       color:#fff;
-      border-radius:12px;
+      border-radius:10px;
       text-align:center;
-      padding:18px 10px;
-      font-size:1rem;
+      padding:10px 6px;
+      font-size:0.85rem;
       font-weight:600;
-      box-shadow:0 2px 10px #0007;
+      box-shadow:0 2px 8px #0007;
       cursor:pointer;
       transition:transform 0.2s;
     }
@@ -51,51 +63,19 @@ export default {
       transform:scale(1.05);
       background:#2a2a2a;
     }
-
-    /* Visitor Counter Popup */
-    #visit-box {
-      display:none;
-      position:fixed;
-      top:50%;
-      left:50%;
-      transform:translate(-50%,-50%);
-      background:#111;
-      padding:20px;
-      border-radius:12px;
-      text-align:center;
-      box-shadow:0 2px 12px #000a;
-      z-index:2000;
-    }
-    #visit-box img {height:32px;}
-    #visit-box button {
-      margin-top:12px;
-      padding:6px 12px;
-      border:none;
-      border-radius:8px;
-      background:#ffcc00;
-      font-weight:bold;
-      cursor:pointer;
-    }
   </style>
 </head>
-<body>
+<body style="position:relative;">
   <video id="player" controls autoplay playsinline></video>
+  <img id="channel-logo" src="https://files.catbox.moe/8e0bg3.jpeg" alt="Logo">
   <div id="error" class="error-message" style="display:none;"></div>
-
-  <!-- Visitor Counter Modal -->
-  <div id="visit-box">
-    <h3 style="color:#fff;margin:0 0 10px;">Visitor Count</h3>
-    <img src="https://visit-counter.vercel.app/counter.png?page=https%3A%2F%2Fjio-fancode.pages.dev&s=46&c=ffcc00&bg=00000000&no=1&ff=digi" alt="visits">
-    <br>
-    <button onclick="document.getElementById('visit-box').style.display='none'">Close</button>
-  </div>
 
   <!-- Extra Section -->
   <div class="extras">
     <div class="extra-card" onclick="window.open('https://example.com/watchmore','_blank')">📺 Watch More</div>
     <div class="extra-card" id="share-btn">🔗 Share</div>
     <div class="extra-card" onclick="window.open('https://example.com/favourite','_blank')">⭐ Favourite</div>
-    <div class="extra-card" onclick="document.getElementById('visit-box').style.display='block'">👁 Visitor Count</div>
+    <div class="extra-card" id="visit-btn">👁 Visitor Count</div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.0/dist/hls.min.js"></script>
@@ -103,6 +83,7 @@ export default {
   <script>
     const video = document.getElementById('player');
     const errorDiv = document.getElementById('error');
+    const visitBtn = document.getElementById('visit-btn');
     const m3u8 = ${m3u8 ? '`' + m3u8.replace(/`/g, '\\`') + '`' : 'null'};
 
     if (!m3u8) {
@@ -177,6 +158,11 @@ export default {
       } else {
         alert('Sharing not supported on this browser.');
       }
+    });
+
+    // Visitor Count inside button
+    visitBtn.addEventListener('click', ()=>{
+      visitBtn.innerHTML = '👁 <img src="https://visit-counter.vercel.app/counter.png?page=https%3A%2F%2Fjio-fancode.pages.dev&s=24&c=ffcc00&bg=00000000&no=1&ff=digi" alt="visits" style="height:14px;vertical-align:middle;">';
     });
   </script>
 </body>
