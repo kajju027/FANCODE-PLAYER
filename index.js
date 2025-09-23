@@ -28,26 +28,23 @@ export default {
     html,body{height:100%;margin:0;background:var(--bg);color:var(--white);font-family:Inter,system-ui,Arial,Helvetica,sans-serif;}
     .container{max-width:900px;margin:0 auto;padding:10px;display:flex;flex-direction:column;min-height:100vh;box-sizing:border-box;}
 
-    /* Video area */
     .player-wrap{position:relative;border-radius:12px;overflow:hidden;background:#000;}
     video#player{
       width:100%;
       height:50vh;
-      object-fit:contain; /* Normal scale */
+      object-fit:contain;
       background:#000;
       display:block;
     }
     .logo{position:absolute;top:10px;left:12px;z-index:30;width:110px;}
     .live-badge{position:absolute;top:12px;right:12px;background:#e53935;color:#fff;padding:6px 10px;border-radius:18px;font-weight:700;font-size:12px;z-index:30;}
 
-    /* Plyr play button */
     .plyr__control.plyr__control--overlaid{
       width:50px;height:64px;border-radius:50%;
       background:var(--accent)!important;
       display:flex;align-items:center;justify-content:center;
     }
 
-    /* Icons row */
     .icons-row{display:flex;gap:12px;margin-top:14px;}
     .icon-btn{flex:1;background:var(--panel);padding:12px;border-radius:12px;text-align:center;cursor:pointer;
       display:flex;flex-direction:column;align-items:center;gap:6px;
@@ -55,25 +52,9 @@ export default {
     .icon-btn small{font-size:12px;color:var(--muted);font-weight:600;}
     .icon-btn .ico{font-size:22px;}
 
-    /* Match card */
-    .match-card{
-      margin-top:16px;
-      background:rgba(30,30,30,0.9);
-      padding:16px;
-      border-radius:14px;
-      backdrop-filter:blur(6px);
-      box-shadow:0 6px 20px rgba(0,0,0,0.5);
-    }
-    .match-title{font-size:18px;font-weight:800;margin-bottom:6px;}
-    .match-title span{opacity:.7;font-weight:600;margin:0 6px;}
-    .match-meta{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);}
-    .status-live{margin-left:auto;background:#4caf50;color:#fff;padding:4px 10px;border-radius:12px;font-weight:700;}
-
-    /* Visitor pill */
     .visitor{
-      display:flex;align-items:center;gap:10px;
-      background:linear-gradient(90deg,#ff9f43,#ff6b6b);
-      color:#111;padding:6px 10px;border-radius:999px;font-weight:800;font-size:13px;
+      display:flex;align-items:center;justify-content:center;
+      padding:6px 10px;
     }
   </style>
 </head>
@@ -88,7 +69,9 @@ export default {
     <!-- Icons row -->
     <div class="icons-row">
       <div class="icon-btn">
-        <div class="visitor" id="visitor-pill">Loading</div>
+        <div class="visitor">
+          <img src="https://visit-counter.vercel.app/counter.png?page=https%3A%2F%2Ffancodez.kajju3864.workers.dev%2F&s=45&c=30ffea&bg=00000000&no=1&ff=digi&tb=&ta=" alt="visits" height="24"/>
+        </div>
         <small>Visitors</small>
       </div>
       <div class="icon-btn" id="share-btn"><div class="ico">⫸</div><small>𝗦𝗵𝗮𝗿𝗲</small></div>
@@ -105,19 +88,7 @@ export default {
     const video = document.getElementById('player');
     const errorDiv = document.getElementById('error');
     const shareBtn = document.getElementById('share-btn');
-    const visitorPill = document.getElementById('visitor-pill');
     const m3u8 = ${m3u8 ? '`' + m3u8.replace(/`/g, '\\`') + '`' : 'null'};
-
-    // Visitor counter
-    function refreshVisitor() {
-      const img = document.createElement('img');
-      img.src = 'https://visit-counter.vercel.app/counter.png?page=https%3A%2F%2Ffancodez.kajju3864.workers.dev%2F&s=45&c=30ffea&bg=00000000&no=1&ff=digi&tb=&ta=' + encodeURIComponent(window.location.hostname) + '&s=32&c=ffff00&bg=00000000&no=1&ff=digi';
-      img.style.height = '24px';
-      img.alt = 'visits';
-      visitorPill.innerHTML = '';
-      visitorPill.appendChild(img);
-    }
-    refreshVisitor();
 
     // Share
     shareBtn.addEventListener('click', async () => {
