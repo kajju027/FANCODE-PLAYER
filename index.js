@@ -21,22 +21,6 @@ export default {
     .plyr{height:70vh;}
     .error-message{color:#fff;text-align:center;margin-top:20px;font-size:1rem;}
 
-    /* Visitor button */
-    #visit-btn {
-      position: fixed;
-      bottom: 90px;
-      right: 16px;
-      background: #1e1e1e;
-      color: #fff;
-      padding: 8px 14px;
-      border-radius: 12px;
-      z-index: 1000;
-      font-size: 0.9rem;
-      cursor:pointer;
-      box-shadow: 0 2px 8px #000a;
-      border:none;
-    }
-
     /* Extra section */
     .extras {
       display: grid;
@@ -63,23 +47,26 @@ export default {
       background:#2a2a2a;
     }
 
-    /* Overlay play button size = 60% */
+    /* Overlay play button size (60%) */
     .plyr__control.plyr__control--overlaid {
       width: 72px !important;
       height: 72px !important;
       font-size: 26px !important;
     }
 
-    /* Progress bar color (yellow) */
+    /* Progress bar + buffer color (yellow only) */
+    .plyr--full-ui input[type=range] {
+      color: yellow !important;
+    }
     .plyr__progress input[type=range]::-webkit-slider-runnable-track {background:yellow !important;}
     .plyr__progress input[type=range]::-moz-range-track {background:yellow !important;}
     .plyr__progress input[type=range]::-ms-track {background:yellow !important;}
 
-    /* Logo on video */
+    /* Logo on video (top-right) */
     #logo {
       position:absolute;
       top:8px;
-      left:8px;
+      right:8px;
       width:42px;
       height:auto;
       z-index:20;
@@ -88,20 +75,17 @@ export default {
 </head>
 <body>
   <div style="position:relative;">
-    <video id="player" controls autoplay playsinline></video>
+    <video id="player" controls autoplay playsinline muted></video>
     <img id="logo" src="https://files.catbox.moe/8e0bg3.jpeg" alt="logo"/>
   </div>
   <div id="error" class="error-message" style="display:none;"></div>
 
-  <!-- Visitor button -->
-  <button id="visit-btn">👁 View Count</button>
-
   <!-- Extra Section -->
   <div class="extras">
-    <div class="extra-card" onclick="location.href='https://example.com/watch'">📺 Watch More</div>
-    <div class="extra-card" onclick="location.href='https://example.com/fair'">⚖️ Fair</div>
-    <div class="extra-card" onclick="location.href='https://example.com/fav'">⭐ Favourite</div>
-    <div class="extra-card" id="share-btn">🔗 Share</div>
+    <div class="extra-card" onclick="location.href='https://example.com/watch'">📺 WATCH MORE</div>
+    <div class="extra-card" onclick="location.href='https://example.com/fair'">⚖️ FIRE</div>
+    <div class="extra-card" id="visit-btn">⭐ VISITOR</div>
+    <div class="extra-card" id="share-btn">🔗 SHARE</div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.0/dist/hls.min.js"></script>
@@ -113,9 +97,9 @@ export default {
     const shareBtn = document.getElementById('share-btn');
     const m3u8 = ${m3u8 ? '`' + m3u8.replace(/`/g, '\\`') + '`' : 'null'};
 
-    // Visitor count on button click
+    // Visitor counter inside Favourite button
     visitBtn.addEventListener('click', () => {
-      visitBtn.innerHTML = '<img src="https://visit-counter.vercel.app/counter.png?page=https%3A%2F%2Fjio-fancode.pages.dev&s=42&c=00ffea&bg=00000000&no=1&ff=digii" alt="visits"/>';
+      visitBtn.innerHTML = '<img src="https://visit-counter.vercel.app/counter.png?page=https%3A%2F%2Fjio-fancode.pages.dev&s=42&c=ffff00&bg=00000000&no=1&ff=digii" alt="visits"/>';
     });
 
     // Share button
@@ -168,6 +152,7 @@ export default {
         hls.on(Hls.Events.MANIFEST_PARSED, function() {
           const availableQualities = hls.levels.map(l=>l.height).filter(Boolean).sort((a,b)=>a-b);
           window.player = new Plyr(video, {
+            autoplay:true,
             controls: ['play-large','rewind','play','fast-forward','progress','current-time','mute','volume','settings','pip','airplay','fullscreen'],
             settings: ['quality'],
             quality: {
@@ -183,7 +168,7 @@ export default {
         });
       } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
         video.src = m3u8;
-        window.player = new Plyr(video);
+        window.player = new Plyr(video, {autoplay:true});
       } else {
         video.style.display = 'none';
         errorDiv.style.display = 'block';
