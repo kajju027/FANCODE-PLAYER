@@ -17,41 +17,41 @@ export default {
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.6.12/dist/plyr.css"/>
   <style>
     body{background:#000;margin:0;padding:0;font-family:sans-serif;display:flex;flex-direction:column;min-height:100vh;}
-    video{width:100%;height:60vh;max-width:100%;background:#000;margin-top:8px;margin-bottom:8px;}
-    .plyr{height:60vh;}
+    video{width:100%;height:50vh;max-width:100%;background:#000;margin-top:6px;margin-bottom:6px;}
+    .plyr{height:50vh;}
     .error-message{color:#fff;text-align:center;margin-top:20px;font-size:1rem;}
 
     /* Extra section */
     .extras {
       display: grid;
       grid-template-columns: repeat(2,1fr);
-      gap: 8px;
-      padding: 12px;
+      gap: 6px;
+      padding: 10px;
       background:#111;
       flex-grow:1;
     }
     .extra-card {
       background:#1e1e1e;
       color:#fff;
-      border-radius:10px;
+      border-radius:8px;
       text-align:center;
-      padding:14px 8px;
-      font-size:0.85rem;
+      padding:10px 6px;
+      font-size:0.8rem;
       font-weight:600;
-      box-shadow:0 2px 10px #0007;
+      box-shadow:0 1px 6px #0007;
       cursor:pointer;
       transition:transform 0.2s;
     }
     .extra-card:hover {
-      transform:scale(1.05);
+      transform:scale(1.04);
       background:#2a2a2a;
     }
 
-    /* Overlay play button size (60%) */
+    /* Overlay play button size */
     .plyr__control.plyr__control--overlaid {
-      width: 72px !important;
-      height: 72px !important;
-      font-size: 26px !important;
+      width: 60px !important;
+      height: 60px !important;
+      font-size: 22px !important;
     }
 
     /* Progress bar + buffer color (yellow only) */
@@ -67,7 +67,7 @@ export default {
       position:absolute;
       top:8px;
       right:8px;
-      width:42px;
+      width:40px;
       height:auto;
       z-index:20;
     }
@@ -85,7 +85,7 @@ export default {
     <div class="extra-card" onclick="location.href='https://famcode.onrender.com/'">📺 WATCH MORE</div>
     <div class="extra-card" onclick="location.href='https://wa.me/918972767390?text=Hi%2C%20I%20am%20coming%20from%20your%20FANCODE%20website'">⚖️ CONTACT US</div>
     <div class="extra-card">
-      <img src="https://visit-counter.vercel.app/counter.png?page=https%3A%2F%2Fjio-fancode.pages.dev&s=42&c=ffff00&bg=00000000&no=1&ff=digii" alt="visits"/>
+      <img src="https://visit-counter.vercel.app/counter.png?page=https%3A%2F%2Fjio-fancode.pages.dev&s=38&c=ffff00&bg=00000000&no=1&ff=digii" alt="visits"/>
     </div>
     <div class="extra-card" id="share-btn">🔗 SHARE</div>
   </div>
