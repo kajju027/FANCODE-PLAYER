@@ -81,29 +81,19 @@ export default {
   <div class="container">
     <div class="player-wrap">
       <video id="player" controls autoplay playsinline muted></video>
-      <img class="logo" src="https://files.catbox.moe/8e0bg3.jpeg" alt="logo"/>
+      <img class="logo" src="" alt="logo"/>
       <div class="live-badge">LIVE</div>
     </div>
 
     <!-- Icons row -->
     <div class="icons-row">
       <div class="icon-btn">
-        <div class="visitor" id="visitor-pill">🔢 Loading</div>
+        <div class="visitor" id="visitor-pill">Loading</div>
         <small>Visitors</small>
       </div>
       <div class="icon-btn" id="share-btn"><div class="ico">🔗</div><small>Share</small></div>
-      <div class="icon-btn" onclick="location.href='https://famcode.onrender.com/'"><div class="ico">▶️</div><small>Watch More</small></div>
-      <div class="icon-btn" onclick="location.href='https://wa.me/918972767390?text=I%20want%20to%20join'"><div class="ico">👥</div><small>Join Now</small></div>
-    </div>
-
-    <!-- Match info -->
-    <div class="match-card">
-      <div class="match-title">Lincoln City F.C.<span>vs</span>Chelsea</div>
-      <div class="match-meta">
-        <span>🏆 Carabao Cup 2025-2026</span>
-        <span>⏱ Start: 12:15:00 AM 24-09-2025</span>
-        <div class="status-live">LIVE</div>
-      </div>
+      <div class="icon-btn" onclick="location.href='https://famcode.onrender.com/'"><div class="ico"> </div><small>Watch More</small></div>
+      <div class="icon-btn" onclick="location.href='https://wa.me/918972767390?text=I'm%20to%20Fancode%20visitor'"><div class="ico">👥</div><small>Contact US</small></div>
     </div>
 
     <div id="error" style="color:#fff;text-align:center;margin-top:18px;display:none;"></div>
