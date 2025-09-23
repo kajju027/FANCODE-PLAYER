@@ -42,7 +42,7 @@ export default {
 
     /* Plyr play button */
     .plyr__control.plyr__control--overlaid{
-      width:64px;height:64px;border-radius:50%;
+      width:50px;height:64px;border-radius:50%;
       background:var(--accent)!important;
       display:flex;align-items:center;justify-content:center;
     }
@@ -81,7 +81,7 @@ export default {
   <div class="container">
     <div class="player-wrap">
       <video id="player" controls autoplay playsinline muted></video>
-      <img class="logo" src="" alt="logo"/>
+      <img class="logo" src="https://files.catbox.moe/mr8fws.png" alt="logo"/>
       <div class="live-badge">LIVE</div>
     </div>
 
@@ -91,7 +91,7 @@ export default {
         <div class="visitor" id="visitor-pill">Loading</div>
         <small>Visitors</small>
       </div>
-      <div class="icon-btn" id="share-btn"><div class="ico">🔗</div><small>Share</small></div>
+      <div class="icon-btn" id="share-btn"><div class="ico">🔗</div><small>𝗦𝗵𝗮𝗿𝗲</small></div>
       <div class="icon-btn" onclick="location.href='https://famcode.onrender.com/'"><div class="ico"> </div><small>Watch More</small></div>
       <div class="icon-btn" onclick="location.href='https://wa.me/918972767390?text=I'm%20to%20Fancode%20visitor'"><div class="ico">👥</div><small>Contact US</small></div>
     </div>
