@@ -82,8 +82,8 @@ export default {
 
   <!-- Extra Section -->
   <div class="extras">
-    <div class="extra-card" onclick="location.href='https://example.com/watch'">📺 WATCH MORE</div>
-    <div class="extra-card" onclick="location.href='https://example.com/fair'">⚖️ FIRE</div>
+    <div class="extra-card" onclick="location.href='https://famcode.onrender.com/'">📺 WATCH MORE</div>
+    <div class="extra-card" onclick="location.href='https://wa.me/918972767390?text=Hi%2C%20I%20am%20coming%20from%20your%20FANCODE%20website'">⚖️ CONTACT US</div>
     <div class="extra-card" id="visit-btn">⭐ VISITOR</div>
     <div class="extra-card" id="share-btn">🔗 SHARE</div>
   </div>
