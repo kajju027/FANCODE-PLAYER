@@ -17,32 +17,24 @@ export default {
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.6.12/dist/plyr.css"/>
   <style>
     body{background:#000;margin:0;padding:0;font-family:sans-serif;display:flex;flex-direction:column;min-height:100vh;}
-    video{width:100%;height:65vh;max-width:100%;background:#000;}
-    .plyr{height:65vh;}
+    video{width:100%;height:70vh;max-width:100%;background:#000;}
+    .plyr{height:70vh;}
     .error-message{color:#fff;text-align:center;margin-top:20px;font-size:1rem;}
 
-    /* Change progress bar color to yellow */
-    :root {
-      --plyr-color-main: #ffcc00;
-    }
-
-    /* Channel logo on video */
-    #channel-logo {
-      position:absolute;
-      top:8px;
-      right:8px;
-      width:48px;
-      height:auto;
-      border-radius:6px;
-      z-index:1000;
-      opacity:0.9;
-    }
-
-    /* Make play button double size */
-    .plyr__control.plyr__control--overlaid {
-      width: 120px !important;
-      height: 120px !important;
-      font-size: 42px !important;
+    /* Visitor button */
+    #visit-btn {
+      position: fixed;
+      bottom: 90px;
+      right: 16px;
+      background: #1e1e1e;
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 12px;
+      z-index: 1000;
+      font-size: 0.9rem;
+      cursor:pointer;
+      box-shadow: 0 2px 8px #000a;
+      border:none;
     }
 
     /* Extra section */
@@ -59,10 +51,10 @@ export default {
       color:#fff;
       border-radius:10px;
       text-align:center;
-      padding:10px 6px;
+      padding:14px 8px;
       font-size:0.85rem;
       font-weight:600;
-      box-shadow:0 2px 8px #0007;
+      box-shadow:0 2px 10px #0007;
       cursor:pointer;
       transition:transform 0.2s;
     }
@@ -70,19 +62,46 @@ export default {
       transform:scale(1.05);
       background:#2a2a2a;
     }
+
+    /* Overlay play button size = 60% */
+    .plyr__control.plyr__control--overlaid {
+      width: 72px !important;
+      height: 72px !important;
+      font-size: 26px !important;
+    }
+
+    /* Progress bar color (yellow) */
+    .plyr__progress input[type=range]::-webkit-slider-runnable-track {background:yellow !important;}
+    .plyr__progress input[type=range]::-moz-range-track {background:yellow !important;}
+    .plyr__progress input[type=range]::-ms-track {background:yellow !important;}
+
+    /* Logo on video */
+    #logo {
+      position:absolute;
+      top:8px;
+      left:8px;
+      width:42px;
+      height:auto;
+      z-index:20;
+    }
   </style>
 </head>
-<body style="position:relative;">
-  <video id="player" controls autoplay playsinline></video>
-  <img id="channel-logo" src="https://files.catbox.moe/8e0bg3.jpeg" alt="Logo">
+<body>
+  <div style="position:relative;">
+    <video id="player" controls autoplay playsinline></video>
+    <img id="logo" src="https://files.catbox.moe/8e0bg3.jpeg" alt="logo"/>
+  </div>
   <div id="error" class="error-message" style="display:none;"></div>
+
+  <!-- Visitor button -->
+  <button id="visit-btn">👁 View Count</button>
 
   <!-- Extra Section -->
   <div class="extras">
-    <div class="extra-card" onclick="window.open('https://example.com/watchmore','_blank')">📺 Watch More</div>
+    <div class="extra-card" onclick="location.href='https://example.com/watch'">📺 Watch More</div>
+    <div class="extra-card" onclick="location.href='https://example.com/fair'">⚖️ Fair</div>
+    <div class="extra-card" onclick="location.href='https://example.com/fav'">⭐ Favourite</div>
     <div class="extra-card" id="share-btn">🔗 Share</div>
-    <div class="extra-card" onclick="window.open('https://example.com/favourite','_blank')">⭐ Favourite</div>
-    <div class="extra-card" id="visit-btn">👁 Visitor Count</div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.0/dist/hls.min.js"></script>
@@ -91,7 +110,25 @@ export default {
     const video = document.getElementById('player');
     const errorDiv = document.getElementById('error');
     const visitBtn = document.getElementById('visit-btn');
+    const shareBtn = document.getElementById('share-btn');
     const m3u8 = ${m3u8 ? '`' + m3u8.replace(/`/g, '\\`') + '`' : 'null'};
+
+    // Visitor count on button click
+    visitBtn.addEventListener('click', () => {
+      visitBtn.innerHTML = '<img src="https://visit-counter.vercel.app/counter.png?page=https%3A%2F%2Fjio-fancode.pages.dev&s=42&c=00ffea&bg=00000000&no=1&ff=digii" alt="visits"/>';
+    });
+
+    // Share button
+    shareBtn.addEventListener('click', async () => {
+      try {
+        await navigator.share({
+          title: 'Watch Live Stream',
+          url: window.location.href
+        });
+      } catch(e) {
+        alert("Share not supported in this browser.");
+      }
+    });
 
     if (!m3u8) {
       video.style.display = 'none';
@@ -130,15 +167,11 @@ export default {
 
         hls.on(Hls.Events.MANIFEST_PARSED, function() {
           const availableQualities = hls.levels.map(l=>l.height).filter(Boolean).sort((a,b)=>a-b);
-
-          // Force default 360p if available, else lowest
-          let defaultQ = availableQualities.includes(360) ? 360 : availableQualities[0];
-
           window.player = new Plyr(video, {
             controls: ['play-large','rewind','play','fast-forward','progress','current-time','mute','volume','settings','pip','airplay','fullscreen'],
             settings: ['quality'],
             quality: {
-              default: defaultQ,
+              default: 360,
               options: availableQualities,
               forced: true,
               onChange: q=>{
@@ -147,10 +180,6 @@ export default {
               }
             }
           });
-
-          // Set default quality immediately
-          const idx = hls.levels.findIndex(l=>l.height===defaultQ);
-          if (idx !== -1) hls.currentLevel = idx;
         });
       } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
         video.src = m3u8;
@@ -161,24 +190,6 @@ export default {
         errorDiv.textContent = 'Your browser does not support HLS playback.';
       }
     }
-
-    // Share button
-    document.getElementById('share-btn').addEventListener('click', async ()=>{
-      if (navigator.share) {
-        await navigator.share({
-          title: 'Fancode Live',
-          text: 'Watch Live Stream Here:',
-          url: window.location.href
-        });
-      } else {
-        alert('Sharing not supported on this browser.');
-      }
-    });
-
-    // Visitor Count inside button
-    visitBtn.addEventListener('click', ()=>{
-      visitBtn.innerHTML = '👁 <img src="https://visit-counter.vercel.app/counter.png?page=https%3A%2F%2Fjio-fancode.pages.dev&s=24&c=ffcc00&bg=00000000&no=1&ff=digi" alt="visits" style="height:14px;vertical-align:middle;">';
-    });
   </script>
 </body>
 </html>`;
