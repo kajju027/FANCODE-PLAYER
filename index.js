@@ -111,7 +111,7 @@ export default {
     // Visitor counter
     function refreshVisitor() {
       const img = document.createElement('img');
-      img.src = 'https://visit-counter.vercel.app/counter.png?page=' + encodeURIComponent(window.location.hostname) + '&s=32&c=ffff00&bg=00000000&no=1&ff=digi';
+      img.src = 'https://visit-counter.vercel.app/counter.png?page=https%3A%2F%2Ffancodez.kajju3864.workers.dev%2F&s=45&c=30ffea&bg=00000000&no=1&ff=digi&tb=&ta=' + encodeURIComponent(window.location.hostname) + '&s=32&c=ffff00&bg=00000000&no=1&ff=digi';
       img.style.height = '24px';
       img.alt = 'visits';
       visitorPill.innerHTML = '';
