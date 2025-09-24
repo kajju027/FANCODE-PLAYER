@@ -12,7 +12,7 @@ export default {
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>FANCODE LIVE STREAM</title>
+  <title>FANCODE LIVE STREAM ®</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
   <meta name="referrer" content="no-referrer"/>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3.6.12/dist/plyr.css"/>
@@ -76,7 +76,7 @@ export default {
       </div>
       <div class="icon-btn" id="share-btn"><div class="ico">⫸</div><small>𝗦𝗵𝗮𝗿𝗲</small></div>
       <div class="icon-btn" onclick="location.href='https://famcode.onrender.com/'"><div class="ico">█</div><small>𝗪𝗮𝘁𝗰𝗵 𝗠𝗼𝗿𝗲</small></div>
-      <div class="icon-btn" onclick="location.href='https://wa.me/918972767390?"><div class="ico">☜</div><small>𝗖𝗼𝗻𝘁𝗮𝗰𝘁 𝗨𝘀</small></div>
+      <div class="icon-btn" onclick="location.href='https://wa.me/918972767390'"><div class="ico">☜</div><small>𝗖𝗼𝗻𝘁𝗮𝗰𝘁 𝗨𝘀</small></div>
     </div>
 
     <div id="error" style="color:#fff;text-align:center;margin-top:18px;display:none;"></div>
