@@ -72,10 +72,10 @@ export default {
         <div class="visitor">
           <img src="https://www.counter12.com/img-8DZW85Ydz45105A3-6.gif" alt="visits" height="24"/>
         </div>
-        <small>Visitors</small>
+        <small>𝗟𝗶𝘃𝗲 𝗩𝗶𝘀𝗶𝘁𝗼𝗿</small>
       </div>
       <div class="icon-btn" id="share-btn"><div class="ico">⫸</div><small>𝗦𝗵𝗮𝗿𝗲</small></div>
-      <div class="icon-btn" onclick="location.href='https://famcode.onrender.com/'"><div class="ico">█</div><small>𝗪𝗮𝘁𝗰𝗵 𝗠𝗼𝗿𝗲</small></div>
+      <div class="icon-btn" onclick="location.href='https://famcode.onrender.com/'"><div class="ico">✵</div><small>𝗪𝗮𝘁𝗰𝗵 𝗠𝗼𝗿𝗲</small></div>
       <div class="icon-btn" onclick="location.href='https://wa.me/918972767390'"><div class="ico">☜</div><small>𝗖𝗼𝗻𝘁𝗮𝗰𝘁 𝗨𝘀</small></div>
     </div>
 
