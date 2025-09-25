@@ -70,7 +70,7 @@ export default {
     <div class="icons-row">
       <div class="icon-btn">
         <div class="visitor">
-          <img src="https://visit-counter.vercel.app/counter.png?page=https%3A%2F%2Ffancodez.kajju3864.workers.dev%2F&s=45&c=30ffea&bg=00000000&no=1&ff=digi&tb=&ta=" alt="visits" height="24"/>
+          <img src="https://www.counter12.com/img-8DZW85Ydz45105A3-6.gif" alt="visits" height="24"/>
         </div>
         <small>Visitors</small>
       </div>
