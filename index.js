@@ -29,13 +29,7 @@ export default {
     .container{max-width:900px;margin:0 auto;padding:10px;display:flex;flex-direction:column;min-height:100vh;box-sizing:border-box;}
 
     .player-wrap{position:relative;border-radius:12px;overflow:hidden;background:#000;}
-    video#player{
-      width:100%;
-      height:50vh;
-      object-fit:contain;
-      background:#000;
-      display:block;
-    }
+    video#player{width:100%;height:50vh;object-fit:contain;background:#000;display:block;}
     .logo{position:absolute;top:10px;left:12px;z-index:30;width:110px;}
     .live-badge{position:absolute;top:12px;right:12px;background:#e53935;color:#fff;padding:6px 10px;border-radius:18px;font-weight:700;font-size:12px;z-index:30;}
 
@@ -52,9 +46,54 @@ export default {
     .icon-btn small{font-size:12px;color:var(--muted);font-weight:600;}
     .icon-btn .ico{font-size:22px;}
 
-    .visitor{
-      display:flex;align-items:center;justify-content:center;
-      padding:6px 10px;
+    .visitor{display:flex;align-items:center;justify-content:center;padding:6px 10px;}
+
+    /* Popup */
+    .popup-overlay {
+      position:fixed;
+      top:0;left:0;
+      width:100%;height:100%;
+      background:rgba(0,0,0,0.85);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:1000;
+    }
+    .popup {
+      background:#111;
+      padding:24px;
+      border-radius:16px;
+      text-align:center;
+      width:300px;
+      box-shadow:0 0 20px rgba(0,0,0,0.8);
+    }
+    .popup h2 {
+      margin:0 0 10px;
+      color:#4ae0ff;
+    }
+    .popup p {
+      margin:0 0 20px;
+      color:#ccc;
+      font-size:14px;
+    }
+    .popup button {
+      display:block;
+      width:100%;
+      padding:12px;
+      border:none;
+      border-radius:8px;
+      font-size:15px;
+      font-weight:600;
+      margin-bottom:12px;
+      cursor:pointer;
+    }
+    .popup .join {
+      background:linear-gradient(90deg,#00a4ff,#7a5cff);
+      color:#fff;
+    }
+    .popup .already {
+      background:#000;
+      color:#fff;
     }
   </style>
 </head>
@@ -72,14 +111,24 @@ export default {
         <div class="visitor">
           <img src="https://www.counter12.com/img-8DZW85Ydz45105A3-6.gif" alt="visits" height="24"/>
         </div>
-        <small>𝗟𝗶𝘃𝗲 𝗩𝗶𝘀𝗶𝘁𝗼𝗿</small>
+        <small>Live Visitor</small>
       </div>
-      <div class="icon-btn" id="share-btn"><div class="ico">⫸</div><small>𝗦𝗵𝗮𝗿𝗲</small></div>
-      <div class="icon-btn" onclick="location.href='https://famcode.onrender.com/'"><div class="ico">✵</div><small>𝗪𝗮𝘁𝗰𝗵 𝗠𝗼𝗿𝗲</small></div>
-      <div class="icon-btn" onclick="location.href='https://wa.me/918972767390'"><div class="ico">☜</div><small>𝗖𝗼𝗻𝘁𝗮𝗰𝘁 𝗨𝘀</small></div>
+      <div class="icon-btn" id="share-btn"><div class="ico">⫸</div><small>Share</small></div>
+      <div class="icon-btn" onclick="location.href='https://famcode.onrender.com/'"><div class="ico">✵</div><small>Watch More</small></div>
+      <div class="icon-btn" onclick="location.href='https://wa.me/918972767390'"><div class="ico">☜</div><small>Contact Us</small></div>
     </div>
 
     <div id="error" style="color:#fff;text-align:center;margin-top:18px;display:none;"></div>
+  </div>
+
+  <!-- Popup -->
+  <div class="popup-overlay" id="popup">
+    <div class="popup">
+      <h2>Support Us!</h2>
+      <p>Join our WhatsApp for latest updates.</p>
+      <button class="join" onclick="window.open('https://whatsapp.com/channel/0029VaeylYYBPzjVNomWuZ0T','_blank')">Join Now</button>
+      <button class="already" onclick="document.getElementById('popup').style.display='none'">Already Joined</button>
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.0/dist/hls.min.js"></script>
