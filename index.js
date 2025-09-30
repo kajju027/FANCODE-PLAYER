@@ -21,7 +21,7 @@ export default {
       --bg:#000;
       --card:#111;
       --muted:#bbb;
-      --accent:#00a4ff;
+      --accent:#FFD700; /* Yellow accent */
       --panel:#1f1f1f;
       --white:#fff;
     }
@@ -29,7 +29,21 @@ export default {
     .container{max-width:900px;margin:0 auto;padding:10px;display:flex;flex-direction:column;min-height:100vh;box-sizing:border-box;}
 
     .player-wrap{position:relative;border-radius:12px;overflow:hidden;background:#000;}
-    video#player{width:100%;height:50vh;object-fit:contain;background:#000;display:block;}
+    video#player{
+      width:100%;
+      height:50vh;
+      object-fit:contain;
+      background:#000;
+      display:block;
+      transition: all 0.3s ease;
+    }
+
+    /* Fullscreen fix */
+    video#player:-webkit-full-screen { object-fit: fill; }
+    video#player:-moz-full-screen { object-fit: fill; }
+    video#player:-ms-fullscreen { object-fit: fill; }
+    video#player:fullscreen { object-fit: fill; }
+
     .logo{position:absolute;top:10px;left:12px;z-index:30;width:110px;}
     .live-badge{position:absolute;top:12px;right:12px;background:#e53935;color:#fff;padding:6px 10px;border-radius:18px;font-weight:700;font-size:12px;z-index:30;}
 
@@ -69,7 +83,7 @@ export default {
     }
     .popup h2 {
       margin:0 0 10px;
-      color:#4ae0ff;
+      color:#FFD700;
     }
     .popup p {
       margin:0 0 20px;
@@ -88,8 +102,8 @@ export default {
       cursor:pointer;
     }
     .popup .join {
-      background:linear-gradient(90deg,#00a4ff,#7a5cff);
-      color:#fff;
+      background:linear-gradient(90deg,#FFD700,#FFC107);
+      color:#000;
     }
     .popup .already {
       background:#000;
