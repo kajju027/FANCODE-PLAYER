@@ -21,37 +21,54 @@ export default {
       --bg:#000;
       --card:#111;
       --muted:#bbb;
-      --accent:#FFD700; /* Yellow accent */
+      --accent:#FFD400; /* changed to yellow */
       --panel:#1f1f1f;
       --white:#fff;
+
+      /* plyr main color override */
+      --plyr-color-main: var(--accent);
     }
+
     html,body{height:100%;margin:0;background:var(--bg);color:var(--white);font-family:Inter,system-ui,Arial,Helvetica,sans-serif;}
     .container{max-width:900px;margin:0 auto;padding:10px;display:flex;flex-direction:column;min-height:100vh;box-sizing:border-box;}
 
-    .player-wrap{position:relative;border-radius:12px;overflow:hidden;background:#000;}
-    video#player{
+    /* Player wrapper: default (not fullscreen) show a good height on mobile & desktop */
+    .player-wrap{position:relative;border-radius:12px;overflow:hidden;background:#000;height:50vh;min-height:260px;}
+    /* When plyr initializes it wraps the video in .plyr - make sure it fills wrapper */
+    .player-wrap .plyr, .player-wrap video, .player-wrap .plyr__video-wrapper{
       width:100%;
-      height:50vh;
-      object-fit:contain;
-      background:#000;
+      height:100%;
       display:block;
-      transition: all 0.3s ease;
     }
 
-    /* Fullscreen fix */
-    video#player:-webkit-full-screen { object-fit: fill; }
-    video#player:-moz-full-screen { object-fit: fill; }
-    video#player:-ms-fullscreen { object-fit: fill; }
-    video#player:fullscreen { object-fit: fill; }
+    /* Default video style (non-fullscreen) */
+    video#player{width:100%;height:100%;object-fit:contain;background:#000;display:block;}
 
-    .logo{position:absolute;top:10px;left:12px;z-index:30;width:110px;}
-    .live-badge{position:absolute;top:12px;right:12px;background:#e53935;color:#fff;padding:6px 10px;border-radius:18px;font-weight:700;font-size:12px;z-index:30;}
+    .logo{position:absolute;top:10px;left:12px;z-index:60;width:110px;}
+    .live-badge{position:absolute;top:12px;right:12px;background:#e53935;color:#fff;padding:6px 10px;border-radius:18px;font-weight:700;font-size:12px;z-index:60;}
 
+    /* Overlaid big play button style */
     .plyr__control.plyr__control--overlaid{
-      width:50px;height:64px;border-radius:50%;
+      width:56px;height:56px;border-radius:50%;
       background:var(--accent)!important;
       display:flex;align-items:center;justify-content:center;
+      box-shadow:0 6px 18px rgba(0,0,0,0.6);
     }
+
+    /* Make plyr controls use accent (yellow) */
+    .plyr--video .plyr__controls button.plyr__control,
+    .plyr__controls [class*="plyr__control"]{
+      color:var(--panel);
+    }
+    /* progress and played bar */
+    .plyr__progress--played, .plyr__progress__buffer {
+      background: linear-gradient(90deg, rgba(255,212,0,1), rgba(255,212,0,0.8)) !important;
+    }
+    .plyr__progress__container .plyr__progress__buffer { opacity: 0.25 !important; }
+    .plyr__tooltip, .plyr__menu__container { color: #111; }
+
+    /* Controls background slightly dark with yellow accents */
+    .plyr__controls { background: rgba(0,0,0,0.15); backdrop-filter: blur(4px); }
 
     .icons-row{display:flex;gap:12px;margin-top:14px;}
     .icon-btn{flex:1;background:var(--panel);padding:12px;border-radius:12px;text-align:center;cursor:pointer;
@@ -81,33 +98,52 @@ export default {
       width:300px;
       box-shadow:0 0 20px rgba(0,0,0,0.8);
     }
-    .popup h2 {
-      margin:0 0 10px;
-      color:#FFD700;
+    .popup h2 { margin:0 0 10px; color:var(--accent); }
+    .popup p { margin:0 0 20px; color:#ccc; font-size:14px; }
+    .popup button { display:block; width:100%; padding:12px; border:none; border-radius:8px; font-size:15px; font-weight:600; margin-bottom:12px; cursor:pointer; }
+    .popup .join { background:linear-gradient(90deg,#FFD400,#FFB200); color:#111; }
+    .popup .already { background:#000; color:#fff; }
+
+    /* --- FULLSCREEN fixes --- */
+    /* When plyr enters fullscreen it adds class .plyr--fullscreen to its root.
+       Force the plyr element to occupy full viewport (some browsers use different fullscreen roots) */
+    .plyr--fullscreen,
+    .plyr--fullwindow {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
+      max-width: 100% !important;
+      z-index: 999999 !important;
+      border-radius: 0 !important;
     }
-    .popup p {
-      margin:0 0 20px;
-      color:#ccc;
-      font-size:14px;
+
+    /* Ensure video fills the fullscreen container */
+    .plyr--fullscreen video,
+    .plyr--fullwindow video {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important; /* fills screen; change to 'contain' if you prefer letterbox */
     }
-    .popup button {
-      display:block;
-      width:100%;
-      padding:12px;
-      border:none;
-      border-radius:8px;
-      font-size:15px;
-      font-weight:600;
-      margin-bottom:12px;
-      cursor:pointer;
+
+    /* Hide rounded borders when fullscreen */
+    .plyr--fullscreen .player-wrap,
+    .plyr--fullwindow .player-wrap {
+      border-radius: 0 !important;
+      overflow: visible !important;
     }
-    .popup .join {
-      background:linear-gradient(90deg,#FFD700,#FFC107);
-      color:#000;
+
+    /* Ensure controls visible over video in fullscreen */
+    .plyr--fullscreen .plyr__controls,
+    .plyr--fullwindow .plyr__controls {
+      background: linear-gradient(180deg, rgba(0,0,0,0.0), rgba(0,0,0,0.45));
     }
-    .popup .already {
-      background:#000;
-      color:#fff;
+
+    /* small responsive tweak */
+    @media (max-width:540px){
+      .logo{width:92px;top:8px;left:8px;}
+      .player-wrap{height:46vh;}
     }
   </style>
 </head>
@@ -162,6 +198,30 @@ export default {
       }
     });
 
+    function initPlyrWithQuality(hlsInstance, qualities){
+      // create Plyr with fullscreen control and quality menu
+      window.player = new Plyr(video,{
+        controls:['play-large','play','progress','current-time','mute','volume','settings','airplay','fullscreen'],
+        settings:['quality'],
+        quality:{
+          default:qualities[0]||360,
+          options:qualities,
+          forced:true,
+          onChange: q => {
+            const lvl = hlsInstance.levels.findIndex(l => l.height === q);
+            if(lvl !== -1) hlsInstance.currentLevel = lvl;
+          }
+        }
+      });
+
+      // Make sure Plyr uses our accent variable for its inline styles (some browsers)
+      try{
+        const root = document.documentElement;
+        const accent = getComputedStyle(root).getPropertyValue('--accent') || '#FFD400';
+        // plyr uses --plyr-color-main variable already set in CSS
+      }catch(e){}
+    }
+
     if (!m3u8) {
       video.style.display = 'none';
       errorDiv.style.display = 'block';
@@ -173,24 +233,29 @@ export default {
         hls.attachMedia(video);
         hls.on(Hls.Events.MANIFEST_PARSED, function() {
           const qualities = hls.levels.map(l=>l.height).filter(Boolean).sort((a,b)=>a-b);
-          window.player = new Plyr(video,{
-            controls:['play-large','play','progress','current-time','mute','volume','settings','airplay','fullscreen'],
-            settings:['quality'],
-            quality:{default:qualities[0]||360,options:qualities,forced:true,onChange:q=>{
-              const lvl=hls.levels.findIndex(l=>l.height===q);
-              if(lvl!==-1) hls.currentLevel=lvl;
-            }}
-          });
+          // ensure unique & sorted
+          const uniq = Array.from(new Set(qualities)).sort((a,b)=>a-b);
+          initPlyrWithQuality(hls, uniq);
+        });
+
+        // Some streams change levels runtime; ensure plyr quality options remain consistent
+        hls.on(Hls.Events.LEVEL_SWITCHED, function(event, data){
+          // no-op, Hls currentLevel will sync with plyr when plyr triggers onChange
         });
       } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
         video.src = m3u8;
-        window.player = new Plyr(video);
+        window.player = new Plyr(video, {
+          controls:['play-large','play','progress','current-time','mute','volume','settings','airplay','fullscreen']
+        });
       } else {
         video.style.display = 'none';
         errorDiv.style.display = 'block';
         errorDiv.textContent = 'Your browser does not support HLS.';
       }
     }
+
+    // Optional: close popup after a few seconds (feel free to remove)
+    setTimeout(()=>{ const p=document.getElementById('popup'); if(p) p.style.display='none'; }, 7000);
   </script>
 </body>
 </html>`;
